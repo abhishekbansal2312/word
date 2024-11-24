@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { toast } from "react-hot-toast";
 
 const Word = () => {
   const [text, setText] = useState("");
@@ -8,18 +9,34 @@ const Word = () => {
   const [palindrome, setPalindrome] = useState(false);
 
   const handleLowerCase = () => {
+    if (!text.trim()) {
+      toast.error("Text area is empty. Please enter some text.");
+      return;
+    }
     setText(text.toLowerCase());
   };
 
   const handleUpperCase = () => {
+    if (!text.trim()) {
+      toast.error("Text area is empty. Please enter some text.");
+      return;
+    }
     setText(text.toUpperCase());
   };
 
   const handleReverse = () => {
+    if (!text.trim()) {
+      toast.error("Text area is empty. Please enter some text.");
+      return;
+    }
     setText(text.split(" ").reverse().join(" "));
   };
 
   const handleFirstUpper = () => {
+    if (!text.trim()) {
+      toast.error("Text area is empty. Please enter some text.");
+      return;
+    }
     setText(
       text
         .split(" ")
@@ -29,6 +46,10 @@ const Word = () => {
   };
 
   const handleCharFrequency = () => {
+    if (!text.trim()) {
+      toast.error("Text area is empty. Please enter some text.");
+      return;
+    }
     const charMap = {};
     const freqArray = [];
 
@@ -47,19 +68,48 @@ const Word = () => {
 
   const handleReplace = (e) => {
     e.preventDefault();
-    if (toReplace.trim() && replaced.trim()) {
-      const updatedText = text.split(toReplace).join(replaced);
-      setText(updatedText);
+
+    if (!text.trim()) {
+      toast.error("Text area is empty. Please enter some text.");
+      return;
     }
+
+    if (!toReplace.trim()) {
+      toast.error("Please specify the word to replace.");
+      return;
+    }
+
+    if (!replaced.trim()) {
+      toast.error("Please specify the replacement word.");
+      return;
+    }
+
+    if (!text.includes(toReplace)) {
+      toast.error(`"${toReplace}" not found in the text.`);
+      return;
+    }
+
+    const updatedText = text.split(toReplace).join(replaced);
+    setText(updatedText);
+    toast.success("Text replaced successfully.");
   };
+
   const checkPalindrome = () => {
+    if (!text.trim()) {
+      toast.error("Text area is empty. Please enter some text.");
+      setPalindrome(false);
+      return;
+    }
     const reversedText = text.split("").reverse().join("");
     if (reversedText === text) {
       setPalindrome(true);
+      toast.success("The text is a palindrome.");
     } else {
       setPalindrome(false);
+      toast.error("The text is not a palindrome.");
     }
   };
+
   const wordCount = text.trim() ? text.trim().split(/\s+/).length : 0;
 
   return (
@@ -97,7 +147,12 @@ const Word = () => {
           </button>
           <button
             className="bg-red-500 text-white py-2 px-4 rounded hover:bg-red-600 transition"
-            onClick={() => setText("")}
+            onClick={() => {
+              setText("");
+              setFrequency([]);
+              setPalindrome(false);
+              toast.success("Text cleared successfully.");
+            }}
           >
             Clear
           </button>
